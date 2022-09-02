@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Volei</title>
+
+    <style>
+        #campo{
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="campo" width="320" height="240"></canvas>
+</body>
+</html>
+
+<script>
+
+
+
+class Vetor2d {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
+class Objeto
+{
+    position = new Vetor2d(0,0);
+    velocity = new Vetor2d(0,0);
+    accel = new Vetor2d(0,0.1);
+    size = new Vetor2d(0,0);
+
+
+    draw()
+    {
+        var canvas = document.getElementById('campo');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = "white";
+        ctx.fillRect(this.position.x,this.position.y,this.size.x,this.size.y);
+        
+    }
+
+    update()
+    {
+        this.velocity.x = this.velocity.x + this.accel.x;
+        this.velocity.y = this.velocity.y + this.accel.y;
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+        bola.esquerda = bola.position.x;
+    bola.direita = bola.position.x + bola.size.x;
+    bola.topo = bola.position.y;
+    bola.base = bola.position.y + bola.size.y;
+    player.esquerda = player.position.x;
+    player.direita = player.position.x + player.size.x;
+    player.topo = player.position.y;
+    player.base = player.position.y + player.size.y;
+    bot.esquerda = bot.position.x;
+    bot.direita = bot.position.x + bot.size.x;
+    bot.topo = bot.position.y;
+    bot.base = bot.position.y + bot.size.y;
+    if(this.base>240)
+    {
+        this.velocity.y=0;
+        this.position.y = 240 - this.size.y;
+    }
+    if(player.esquerda<0)
+    {
+        
+        player.position.x=0;
+        player.velocity.x=0;
+    }
+    if(player.direita>159)
+    {
+        player.position.x=139;
+        player.velocity.x=0;
+    }
+    if(bot.direita>320)
+    {
+        
+        bot.position.x=300;
+        bot.velocity.x=0;
+    }
+    if(bot.esquerda<161)
+    {
+        bot.position.x=161;
+        bot.velocity.x=0;
+    }
+    }
+    collidesWith(obj2)
+    {
+        if(this.direita > obj2.esquerda && this.esquerda < obj2.direita && this.topo < obj2.base && this.base > obj2.topo)
+        {
+            this.velocity.y = -6;
+        }
+        if(this.esquerda<0)
+        {
+            this.velocity.x=1;
+        }
+        if(this.direita>320)
+        {
+            this.velocity.x=-1;
+        }
+        if(this.base > obj2.topo && obj2.base<239 && bola.position.x>161)
+        {
+            bola.velocity.x = -1;
+        }
+
+        if(this.base > obj2.topo && obj2.base<239 && bola.position.x<161)
+        {
+            bola.velocity.x = 1;
+        }
+
+        if(bola.base==240)
+        {
+            
+            if(bola.position.x<159)
+            {
+                bola.velocity.x=1
+                localStorage.pontoPedito++;
+            }
+            else if(bola.position.x>161)
+            {
+                bola.velocity.x=-1
+                localStorage.pontoPlayer++;
+                
+            }
+            bola.position.x=160;
+            bola.position.y=50;
+            bola.velocity.y=0;
+            bola.accel.y=0.1;
+        
+        }
+    }
+}
+
+
+
+class Player extends Objeto 
+{
+    esquerda = 0;
+    direta = 0;
+    topo = 0;
+    base = 0;
+    esquerda = this.position.x;
+    direita = this.position.x + this.size.x;
+    topo = this.position.y;
+    base = this.position.y + this.size.y;
+
+    movimento(e) {
+        if(e!=undefined)
+        {
+    if (e.keyCode == 39) {
+      player.velocity.x=1.5;
+    } else if (e.keyCode == 37) {
+        player.velocity.x=-1.5;
+    } else if (e.keyCode == 38 && player.base>239) {
+        player.velocity.y=-3;
+        e.preventDefault();
+    }
+
+}
+}
+    movimentoPedito()
+    {
+        if(bola.position.x>161)
+        {
+        if(bola.position.x<bot.position.x)
+        {
+            bot.velocity.x=-0.6;
+        }
+        if(bola.position.x>bot.position.x)
+        {
+            bot.velocity.x=0.6;
+        }
+        if(bola.base>140 && bot.base>239)
+        {
+            bot.velocity.y=-3;
+        }
+    }
+    }
+}
+class Bola extends Objeto
+{
+    esquerda = 0;
+    direta = 0;
+    topo = 0;
+    base = 0;
+	esquerda = this.position.x;
+    direita = this.position.x + this.size.x;
+    topo = this.position.y;
+    base = this.position.y + this.size.y;
+}
+if(localStorage.pontoPedito == undefined){
+ localStorage.pontoPedito = 0;
+}
+if(localStorage.pontoPlayer == undefined){
+ localStorage.pontoPlayer = 0;
+}
+
+var player = new Player()
+player.position.x=100;
+player.position.y=220;
+player.size.x=20;
+player.size.y=20;
+player.velocity.y=0;
+player.accel.y=0.1;
+player.velocity.x=0;
+
+var bot = new Player()
+bot.position.x=200;
+bot.position.y=220;
+bot.size.x=20;
+bot.size.y=20;
+bot.velocity.y=0;
+bot.accel.y=0.1;
+bot.velocity.x=0;
+var rede = new Objeto()
+rede.position.x=159;
+rede.position.y=200;
+rede.size.x=2;
+rede.size.y=40;
+var bola = new Bola()
+bola.position.x=160;
+bola.position.y=50;
+bola.size.x=10;
+bola.size.y=10;
+bola.velocity.y=0;
+bola.accel.y=0.1;
+bola.velocity.x=-1;
+document.addEventListener("keydown", player.movimento);
+
+const performAnimation = () => {
+  request = requestAnimationFrame(performAnimation)
+  var canvas = document.getElementById("campo");
+  var ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, 320, 240);
+  player.draw();
+    bot.draw();
+    rede.draw();
+    bola.draw();
+    bola.update();
+    player.update();
+    bot.update();
+    bola.collidesWith(player);
+    bola.collidesWith(bot);
+    player.movimento();
+    bot.movimentoPedito();
+    ctx.font = "20px Verdana";
+    ctx.fillStyle = 'white';
+    ctx.fillText(localStorage.getItem('pontoPedito'),290,30);
+    ctx.fillText(localStorage.getItem('pontoPlayer'),20,30);    
+
+}
+
+requestAnimationFrame(performAnimation)
+
+</script>
